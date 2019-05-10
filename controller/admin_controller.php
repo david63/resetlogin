@@ -142,9 +142,16 @@ class admin_controller implements admin_interface
 			}
 		}
 
+		// Template vars for header panel
+		$this->template->assign_vars(array(
+			'HEAD_TITLE'		=> $this->language->lang('RESET_LOGIN'),
+			'HEAD_DESCRIPTION'	=> $this->language->lang('RESET_LOGIN_EXPLAIN'),
+
+			'VERSION_NUMBER'	=> ext::RESET_LOGIN_ATTEMPTS_VERSION,
+		));
+
 		$this->template->assign_vars(array(
 			'ERROR_MSG'						=> implode('<br />', $errors),
-			'RESET_LOGIN_ATTEMPTS_VERSION'	=> ext::RESET_LOGIN_ATTEMPTS_VERSION,
 			'RESET_USERNAME'				=> (!empty($user_id)) ? $reset_username : '',
 
 			'S_ERROR'						=> (count($errors)) ? true : false,
