@@ -9,8 +9,14 @@
 
 namespace david63\resetlogin\controller;
 
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use david63\resetlogin\ext;
+use phpbb\config\config;
+use phpbb\db\driver\driver_interface;
+use phpbb\request\request;
+use phpbb\template\template;
+use phpbb\user;
+use phpbb\log\log;
+use phpbb\language\language;
+use david63\resetlogin\core\functions;
 
 /**
 * Admin controller
@@ -44,25 +50,33 @@ class admin_controller implements admin_interface
 	/** @var \phpbb\language\language */
 	protected $language;
 
+	/** @var \david63\resetlogin\core\functions */
+	protected $functions;
+
+	/** @var string phpBB tables */
+	protected $tables;
+
 	/** @var string Custom form action */
 	protected $u_action;
 
 	/**
 	* Constructor for admin controller
 	*
-	* @param \phpbb\config\config				$config		Config object
-	* @param \phpbb\db\driver\driver_interface	$db
-	* @param \phpbb\request\request				$request	Request object
-	* @param \phpbb\template\template			$template	Template object
-	* @param \phpbb\user						$user		User object
-	* @param \phpbb\log\log						$log		phpBB log
-	* @param string 							$root_path
-	* @param string 							$php_ext
-	* @param phpbb\language\language			$language
+	* @param \phpbb\config\config					$config		Config object
+	* @param \phpbb\db\driver\driver_interface		$db			The db connection
+	* @param \phpbb\request\request					$request	Request object
+	* @param \phpbb\template\template				$template	Template object
+	* @param \phpbb\user							$user		User object
+	* @param \phpbb\log\log							$log		phpBB log
+	* @param string 								$root_path	phpBB root path
+	* @param string 								$php_ext	phpBB ext
+	* @param \phpbb\language\language				$language	Language object
+	* @param \david63\resetlogin\core\functions		functions	Functions for the extension
+	* @param array									$tables		phpBB db tables
 	*
 	* @access public
 	*/
-	public function __construct(\phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, \phpbb\log\log $log, $root_path, $php_ext, \phpbb\language\language $language)
+	public function __construct(config $config, driver_interface $db, request $request, template $template, user $user, log $log, $root_path, $php_ext, language $language, functions $functions, $tables)
 	{
 		$this->config		= $config;
 		$this->db  			= $db;
@@ -73,6 +87,8 @@ class admin_controller implements admin_interface
 		$this->root_path	= $root_path;
 		$this->phpEx		= $php_ext;
 		$this->language		= $language;
+		$this->functions	= $functions;
+		$this->tables		= $tables;
 	}
 
 	/**
@@ -84,10 +100,12 @@ class admin_controller implements admin_interface
 	public function display_output()
 	{
 		// Add the language file
-		$this->language->add_lang('acp_resetlogin', 'david63/resetlogin');
+		$this->language->add_lang('acp_resetlogin', $this->functions->get_ext_namespace());
 
 		$form_key = 'reset_login';
 		add_form_key($form_key);
+
+		$back = false;
 
 		$submit 		= ($this->request->is_set_post('submit')) ? true : false;
 		$reset_username	= $this->request->variable('reset_username', '', true);
@@ -104,7 +122,7 @@ class admin_controller implements admin_interface
 			if (!empty($reset_username))
 			{
 				$sql = 'SELECT user_id, user_login_attempts
-					FROM ' . USERS_TABLE . "
+					FROM ' . $this->tables['users'] . "
 					WHERE username_clean = '" . $this->db->sql_escape(utf8_clean_string($reset_username)) . "'";
 				$result = $this->db->sql_query($sql);
 
@@ -131,7 +149,7 @@ class admin_controller implements admin_interface
 
 			if (empty($errors))
 			{
-				$sql = 'UPDATE ' . USERS_TABLE . '
+				$sql = 'UPDATE ' . $this->tables['users'] . '
 					SET user_login_attempts = 0
 					WHERE user_id = ' . (int) $user_id;
 				$this->db->sql_query($sql);
@@ -147,16 +165,22 @@ class admin_controller implements admin_interface
 			'HEAD_TITLE'		=> $this->language->lang('RESET_LOGIN'),
 			'HEAD_DESCRIPTION'	=> $this->language->lang('RESET_LOGIN_EXPLAIN'),
 
-			'VERSION_NUMBER'	=> ext::RESET_LOGIN_ATTEMPTS_VERSION,
+			'NAMESPACE'			=> $this->functions->get_ext_namespace('twig'),
+
+			'S_BACK'			=> $back,
+			'S_VERSION_CHECK'	=> $this->functions->version_check(),
+
+			'VERSION_NUMBER'	=> $this->functions->get_this_version(),
 		));
 
 		$this->template->assign_vars(array(
-			'ERROR_MSG'						=> implode('<br />', $errors),
-			'RESET_USERNAME'				=> (!empty($user_id)) ? $reset_username : '',
+			'ERROR_DESCRIPTION'	=> implode('<br>', $errors),
+			'RESET_USERNAME'	=> (!empty($user_id)) ? $reset_username : '',
 
-			'S_ERROR'						=> (count($errors)) ? true : false,
-			'U_ACTION'						=> $this->u_action,
-			'U_RESET_USERNAME'				=> append_sid("{$this->root_path}memberlist.$this->phpEx", 'mode=searchuser&amp;form=resetlogin&amp;field=reset_username&amp;select_single=true'),
+			'S_ERROR'			=> (count($errors)) ? true : false,
+			
+			'U_ACTION'			=> $this->u_action,
+			'U_RESET_USERNAME'	=> append_sid("{$this->root_path}memberlist.$this->phpEx", 'mode=searchuser&amp;form=resetlogin&amp;field=reset_username&amp;select_single=true'),
 		));
 	}
 }

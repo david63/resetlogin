@@ -38,6 +38,6 @@ if (empty($lang) || !is_array($lang))
 
 $lang = array_merge($lang, array(
 	'ACP_USER_UTILS'		=> 'User utilities',
-	'LOG_USER_LOGIN_RESET'	=> '<strong>Reset %1$s failed login attempts for</strong><br />» %2$s',
+	'LOG_USER_LOGIN_RESET'	=> '<strong>Reset %1$s failed login attempts for</strong><br>» %2$s',
 	'RESET_LOGIN'			=> 'Reset login attempts',
 ));

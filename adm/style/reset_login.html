@@ -1,18 +1,10 @@
-{% include 'overall_header.html' %}
-{% include '@david63_resetlogin/head_panel.html' %}
-
-{% if S_ERROR %}
-	<div class="errorbox">
-		<h3>{{ lang('WARNING') }}</h3>
-		<p>{ERROR_MSG}</p>
-	</div>
-{% endif %}
+{% include '@' ~ NAMESPACE ~ '/head_panel.html' %}
 
 <form id="resetlogin" method="post" action="{U_ACTION}">
 	<fieldset>
 		<legend>{{ lang('RESET_LOGIN') }}</legend>
 		<dl>
-			<dt><label for="reset_username">{{ lang('USERNAME') }}{{ lang('COLON') }}</label><br /><span>{{ lang('USER_EXPLAIN') }}</span></dt>
+			<dt><label for="reset_username">{{ lang('USERNAME') }}{{ lang('COLON') }}</label><br><span>{{ lang('USER_EXPLAIN') }}</span></dt>
 			<dd>
 				<input class="textbox" type="text" id="reset_username" name="reset_username" value="{RESET_USERNAME}" />
 			</dd>
@@ -32,5 +24,4 @@
 	</fieldset>
 </form>
 
-{% include '@david63_resetlogin/donate.html' %}
-{% include 'overall_footer.html' %}
+{% include '@' ~ NAMESPACE ~ '/donate.html' %}

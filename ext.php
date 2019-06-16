@@ -13,8 +13,6 @@ use phpbb\extension\base;
 
 class ext extends base
 {
-	const RESET_LOGIN_ATTEMPTS_VERSION	= '2.1.0';
-
 	/**
 	* Enable extension if phpBB version requirement is met
 	*
