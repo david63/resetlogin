@@ -38,7 +38,7 @@ if (empty($lang) || !is_array($lang))
 
 $lang = array_merge($lang, array(
 	'ERROR_TITLE'			=> 'Error',
-	
+
 	'NEW_VERSION'			=> 'New Version',
 	'NEW_VERSION_EXPLAIN'	=> 'There is a newer version of this extension available.',
 	'NO_LOGINS'				=> 'The selected user does not have any failed login attempts to reset',

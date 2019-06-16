@@ -178,7 +178,7 @@ class admin_controller implements admin_interface
 			'RESET_USERNAME'	=> (!empty($user_id)) ? $reset_username : '',
 
 			'S_ERROR'			=> (count($errors)) ? true : false,
-			
+
 			'U_ACTION'			=> $this->u_action,
 			'U_RESET_USERNAME'	=> append_sid("{$this->root_path}memberlist.$this->phpEx", 'mode=searchuser&amp;form=resetlogin&amp;field=reset_username&amp;select_single=true'),
 		));
