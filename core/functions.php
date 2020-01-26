@@ -60,7 +60,7 @@ class functions
 		return $extension_name;
 	}
 
-   	/**
+	/**
 	* Check if there is an updated version of the extension
 	*
 	* @return $new_version
