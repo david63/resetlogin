@@ -100,8 +100,7 @@ class admin_controller implements admin_interface
 	public function display_output()
 	{
 		// Add the language files
-		$this->language->add_lang('acp_resetlogin', $this->functions->get_ext_namespace());
-		$this->language->add_lang('acp_common', $this->functions->get_ext_namespace());
+		$this->language->add_lang(array('acp_resetlogin', 'acp_common'), $this->functions->get_ext_namespace());
 
 		$form_key = 'reset_login';
 		add_form_key($form_key);
@@ -111,7 +110,7 @@ class admin_controller implements admin_interface
 		$submit 		= ($this->request->is_set_post('submit')) ? true : false;
 		$reset_username	= $this->request->variable('reset_username', '', true);
 
-		$errors = array();
+		$errors = [];
 
 		if ($submit)
 		{
